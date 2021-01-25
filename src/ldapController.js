@@ -3,7 +3,8 @@ import ldap from 'ldapjs';
 /**
  * Little and very opionionated asyc wrapper to ldapjs. 
  * This is not supposed to leave the connection open but to destroy 
- * and reconnect each time.
+ * and reconnect each time. 
+ * IT IS NOT TO BE USED IN HIGH CONCURRENT ENVIROMENT (multiple requests at the same time)
  * Usage example:
  * ```js
  * var ldap = new ldapController(...)
@@ -30,9 +31,16 @@ export class ldapController {
         this.adminDN = adminDN;
         this.adminPW = adminPW;
         this.client = undefined;
+        this._isBusy = Promise.resolve();
+        this._resolveBusyState = undefined;
     }
 
     async Connect(){
+        // this is just to avoid problems with multiple connections
+        // basically it runs all query in series sincronously, it blocks.
+        await this._isBusy;
+        this._isBusy = new Promise(this._busyPromiseResolver.bind(this));
+
         this.client =  ldap.createClient({
             url: [this.ldapUrl],
             timeout:2000,
@@ -40,18 +48,23 @@ export class ldapController {
         });
         await this._bind();
     }
-    
+
+    _busyPromiseResolver(resolve)
+    {
+        this._resolveBusyState = resolve;
+    }
 
     _bind(){
         return this._promisifyMethod( this.client.bind, this.adminDN, this.adminPW);
     }
 
 
-    async Search(filterStr="(objectclass=*)"){
-        var data = {entries:[], success:true, error:""};
+    async Search(filterStr="(objectclass=*)", scope=""){
+        var data   = {entries:[], success:true, error:""};
+        var _scope = (scope === "") ? this.baseDN : `${scope},${this.baseDN}`;
 
         try{
-            data = await this._asyncSearch(filterStr);
+            data = await this._asyncSearch(filterStr, _scope);
         }
         catch(err){
             data.success = false;
@@ -61,10 +74,10 @@ export class ldapController {
     }
 
 
-    _asyncSearch(filterStr){
+    _asyncSearch(filterStr,_scope){
         var prom = new Promise((resolve, reject)=>{
         
-            this.client.search(this.baseDN,{scope:"sub",filter:filterStr}, function(err, res) {
+            this.client.search(_scope,{scope:"sub",filter:filterStr}, function(err, res) {
                 var data = {entries:[], success:true, error:""};
 
                 if(err) reject(err);
@@ -107,6 +120,7 @@ export class ldapController {
             this.client.removeAllListeners();
             this.client.connected = false;
         }
+        if(this._resolveBusyState) this._resolveBusyState();
     }
 
     _promisifyMethod( method, ...args){

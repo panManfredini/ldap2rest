@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
     "ldap-test-server": "docker run --rm -p 1389:389  osixia/openldap:latest"
   },
@@ -14,7 +15,6 @@
     "@koa/router": "^10.0.0",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
-    "koa-morgan": "^1.0.1",
     "ldapjs": "^2.2.3"
   },
   "devDependencies": {

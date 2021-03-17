@@ -6,6 +6,7 @@ Simple and very opinionated REST client for OpenLDAP
 | Env. variable name | Default value | Notes |
 |--------------------|---------------|-------|
 |L2H_PREFIX          | none          | prefix to use behind a proxy| 
+|L2H_ALLOW_CORS      | "false"       | if to allow cors and put response headers| 
 |L2H_PORT            | 3000          | listen on port |
 |L2H_LDAP_URL        | ldap://localhost:389 | ldap server full url including port |
 |L2H_BASE_DN         | dc=example,dc=org | base DN for searches |

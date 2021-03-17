@@ -1,4 +1,5 @@
 var _prefix = process.env.L2H_PREFIX || "";
+var _cors = process.env.L2H_ALLOW_CORS || "false";
 var _url      = process.env.L2H_LDAP_URL || "ldap://localhost:389";
 var _base     = process.env.L2H_BASE_DN  || "dc=example,dc=org";
 var _bindAdm  = process.env.L2H_ADMIN_DN || "cn=admin,dc=example,dc=org";
@@ -15,5 +16,6 @@ export const config =
     bindAdmin: _bindAdm,
     pw: _pw,
     port: _port,
-    users_scope : _users_scope
+    users_scope : _users_scope,
+    cors: (_cors.toLowerCase() === "true")
 }

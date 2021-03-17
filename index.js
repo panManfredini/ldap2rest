@@ -1,5 +1,6 @@
 import Koa from "koa"
 import bodyParser from 'koa-bodyparser'
+import cors from "@koa/cors"
 import {config} from "./src/config.js"
 import {router} from './src/routes.js'
 import {loggerSTDout} from './src/damnSimpleLogger.js'
@@ -13,6 +14,7 @@ var app = new Koa();
 	// Config
 	var logger = new loggerSTDout();
 	app.use(logger.logger);
+	if(config.cors) app.use(cors());
 	app.use(bodyParser( { enableTypes:['json'] } ));
 	app.use(router.routes());
 

@@ -1,5 +1,5 @@
 import {ldapController} from "../src/ldapController.js";
-
+import {groupUtils, getUsers } from "../src/dataManagment.js"
 
 /**
  * Minimal testing suite, you need to run "npm run ldap-test-server".
@@ -10,8 +10,8 @@ import {ldapController} from "../src/ldapController.js";
 describe("LDAP Controller test suite",()=>{
     //var url = "ldap://localhost"
     var url = "ldap://localhost:1389"
-    var Base = "dc=example,dc=org";
-    var BindAdm = "cn=admin,dc=example,dc=org";
+    var Base = "dc=xenoscope,dc=org";
+    var BindAdm = "cn=admin,dc=xenoscope,dc=org";
     var PW = "admin";
     var ldap = new ldapController(url,Base,BindAdm, PW);
     var test_user = {
@@ -85,6 +85,38 @@ describe("LDAP Controller test suite",()=>{
         await ldap.Modify(`cn=${test_user.cn},${Base}`, user_mod);
         var data = await ldap.Search("(&(objectClass=inetOrgPerson)(cn=macio))");
         expect(data.entries[0].mail).toEqual(user_mod.modification.mail);
+    });
+
+    test("Add Group Member", async()=>{
+        var g = new groupUtils(ldap);
+        var success = await g.addGroupMember("cn=admins,ou=groups,dc=xenoscope,dc=org", 'cn=macio,'+Base );
+        expect(success).toBe(true);
+        await ldap.Connect();
+        var data = await ldap.Search("(objectClass=groupOfNames)");
+        var element = data.entries.find((v)=>{return (v.cn === "admins")})
+        expect(element.member).toStrictEqual(["uid=scadmin,ou=users,dc=xenoscope,dc=org","cn=macio,dc=xenoscope,dc=org"]);
+    });
+
+    test("Get Group of User", async()=>{
+        var g = new groupUtils(ldap);
+        var data = await g.getGroupOfUser('cn=macio,'+Base );
+        expect(data.entries[0].cn).toEqual("admins");
+    })
+
+    test("Get Users", async()=>{
+        var data = await getUsers(ldap);
+        expect(data.entries.length).toBe(2);
+        expect(data.entries[0].group.dn).toBe("cn=admins,ou=groups,dc=xenoscope,dc=org");
+    });
+
+    test("Delete Group Member", async()=>{
+        var g = new groupUtils(ldap);
+        var success = await g.removeGroupMember("cn=admins,ou=groups,dc=xenoscope,dc=org", 'cn=macio,'+Base );
+        expect(success).toBe(true);
+        await ldap.Connect();
+        var data = await ldap.Search("(objectClass=groupOfNames)");
+        var element = data.entries.find((v)=>{return (v.cn === "admins")})
+        expect(element.member).toStrictEqual("uid=scadmin,ou=users,dc=xenoscope,dc=org");
     });
 
     test("Delete", async()=>{

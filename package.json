@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
-    "ldap-test-server": "docker run --rm -p 1389:389  osixia/openldap:latest"
+    "ldap-test-server": "docker run --rm -p 1389:389  -e LDAP_BASE_DN='dc=xenoscope,dc=org' -e LDAP_DOMAIN='xenoscope.org' xenoscopesc/osixia-openldap-ppolicy:1.4.0v2"
   },
   "author": "",
   "license": "ISC",

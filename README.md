@@ -13,3 +13,10 @@ Simple and very opinionated REST client for OpenLDAP
 |L2H_ADMIN_DN        | cn=admin,dc=example,dc=org | DN of admin |
 |L2H_ADMIN_PW        | admin | password of admin |
 |L2H_USER_SCOPE      | empty | additional organization unit for users, for example "ou=Persons"|
+|L2H_GROUP_ADDINTIONAL_DN| "" | additional dn to add to group, example "ou=groups"|
+|L2H_GROUP_NAME_ATTR| "cn" | attribute that holds the name of the group|
+
+### Notes
+
+- The search filter for groups is "(&(member={user_dn})(objectclass=groupOfNames))".
+- The search filter for users is "(objectClass=inetOrgPerson)".

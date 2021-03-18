@@ -1,25 +1,23 @@
 export function createUser(data) {
     if (!validateDataUserCreate(data)) return null;
     return {
-        uid: data.user_name,
+        uid: data.uid,
         objectclass: "inetOrgPerson",
-        cn: data.full_name,
+        cn: data.uid,
         sn: " ",
-        mail: data.email,
-        mobile: data.phone,
-        displayname: data.display_name,
-        userPassword: data.password
+        mail: data.mail,
+        mobile: data.mobile,
+        displayname: data.displayName,
+        userPassword: "test"
     }
 }
 
 function validateDataUserCreate(data) {
     if (typeof data === "undefined") return false;
-    if (isEmptyString(data.user_name)) return false;
-    if (isEmptyString(data.password)) return false;
-    if (isEmptyString(data.phone)) return false;
-    if (isEmptyString(data.email)) return false;
-    if (isEmptyString(data.full_name)) return false;
-    if (isEmptyString(data.display_name)) return false;
+    if (isEmptyString(data.uid)) return false;
+    if (isEmptyString(data.mobile)) return false;
+    if (isEmptyString(data.mail)) return false;
+    if (isEmptyString(data.displayName)) return false;
     return true;
 }
 
@@ -40,6 +38,7 @@ export async function getUsers(ldap)
         for(let i=0; i < data.entries.length; i++){
             var v = data.entries[i];
             try{
+                v.userPassword = null;
                 var _group = await utils.getGroupOfUser(v.dn);
                 v.group = _group.entries[0];
             }

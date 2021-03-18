@@ -34,7 +34,7 @@ router.post('/groups/delete_member',async (ctx, next)=>{
     var data = ctx.request.body
     try{
         var g = new groupUtils(ldap);
-        var success = g.removeGroupMember(data.dn_group, data.dn_user);
+        var success = await g.removeGroupMember(data.dn_group, data.dn_user);
     }
     catch(e){
         success = false;
@@ -50,9 +50,10 @@ router.post('/groups/add_member',async (ctx, next)=>{
     var data = ctx.request.body
     try{
         var g = new groupUtils(ldap);
-        var success = g.addGroupMember(data.dn_group, data.dn_user);
+        var success = await g.addGroupMember(data.dn_group, data.dn_user);
     }
     catch(e){
+        console.log(e.message);
         success = false;
     }
 
@@ -88,9 +89,30 @@ router.post('/update', async(ctx)=>{
     var data = ctx.request.body;
     try{
         var dn = data.dn;
-        var change = {  operation: 'replace',  modification: data.updates }
         await ldap.Connect();
-        await ldap.Modify(dn, change);
+        for( const [key, value] of Object.entries(data.updates)){
+            var change = {  operation: 'replace',  modification: {[key]:value} }
+            await ldap.Modify(dn, change);
+        }
+        
+        ctx.status = 200;
+    }
+    catch(e)
+    {
+        ctx.status = 405;
+        ctx.body = e.message;
+    }
+    finally{
+        ldap.Disconnect();
+    }
+});
+
+router.post('/delete', async(ctx)=>{
+    var data = ctx.request.body;
+    try{
+        var dn = data.dn_user;
+        await ldap.Connect();
+        await ldap.Delete(dn);
         ctx.status = 200;
     }
     catch(e)

@@ -20,3 +20,104 @@ Simple and very opinionated REST client for OpenLDAP
 
 - The search filter for groups is "(&(member={user_dn})(objectclass=groupOfNames))".
 - The search filter for users is "(objectClass=inetOrgPerson)".
+
+# API
+
+```js
+// Routes - Methods and Data structure
+
+// Route: "/users"
+// Method: GET
+// Data structure
+
+{
+    entries:[
+      dn: "uid=scadmin,ou=users,dc=xenoscope,dc=org",
+      controls: [],
+      objectClass: "inetOrgPerson",
+      uid: "username",
+      sn: " ",
+      cn: " ",
+      displayName: "Full Name",
+      userPassword: " ",
+      mail: "email",
+      mobile: "phone number",
+      group: {
+        dn: "cn=admins,ou=groups,dc=xenoscope,dc=org",
+        controls: [],
+        cn: "admins",
+        objectClass: "groupOfNames",
+        member: ["list of dn"]
+      }
+    }
+    ], 
+    success: bool, 
+    error: string   
+}  
+
+// Route: "/groups"
+// Method: GET
+// Data structure
+{
+  "entries": [
+    {
+      "dn": "cn=admins,ou=groups,dc=xenoscope,dc=org",
+      "controls": [],
+      "cn": "admins",
+      "objectClass": "groupOfNames",
+      "member": "uid=scadmin,ou=users,dc=xenoscope,dc=org"
+    },
+    ....
+  ],
+  "success": true,
+  "error": ""
+}
+
+
+// Route: "/create"
+// Method: POST
+// Data structure
+{
+	"uid":"username",
+	"displayName":"Full Name",
+	"mobile":"06992934843",
+	"mail":"j.snow@gmail.com"
+}
+
+// Route: "/update"
+// Method: POST
+// Data structure
+{
+	"dn":"uid=john,ou=users,dc=xenoscope,dc=org",
+	"updates":{
+		"displayName": "new Display name",
+		"mail": "new email",
+		"mobile": "new phone"
+	}
+}
+
+// Route: "/delete"
+// Method: POST
+// Data structure
+{
+	"dn_user":"uid=johdsn,ou=users,dc=xenoscope,dc=org"
+}
+
+
+// Route: "/groups/add_member"
+// Method: POST
+// Data structure
+{
+	"dn_group":"cn=writers,ou=groups,dc=xenoscope,dc=org",
+	"dn_user":"uid=johdsn,ou=users,dc=xenoscope,dc=org"
+}
+
+
+// Route: "/groups/delete_member"
+// Method: POST
+// Data structure
+{
+	"dn_group":"cn=writers,ou=groups,dc=xenoscope,dc=org",
+	"dn_user":"uid=johdsn,ou=users,dc=xenoscope,dc=org"
+}
+```

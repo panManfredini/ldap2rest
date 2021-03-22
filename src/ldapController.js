@@ -80,20 +80,21 @@ export class ldapController {
             this.client.search(_scope,{scope:"sub",filter:filterStr}, function(err, res) {
                 var data = {entries:[], success:true, error:""};
 
-                if(err) reject(err);
+                if(err) { reject(err); return; }
+                if(res){
+                    res.on('error', function(err) {
+                        reject(err);
+                    });
 
-                res.on('error', function(err) {
-                    reject(err);
-                });
+                    res.on('searchEntry', function(entry) {
+                        data.entries.push(entry.object);
+                    });
 
-                res.on('searchEntry', function(entry) {
-                    data.entries.push(entry.object);
-                });
-
-                res.on('end', function(result) {
-                    data.success = (result.status === 0);
-                    resolve(data);
-                });
+                    res.on('end', function(result) {
+                        data.success = (result.status === 0);
+                        resolve(data);
+                    });
+                }
             });
 
         });

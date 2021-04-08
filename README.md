@@ -8,7 +8,7 @@ docker run --rm -it -p 3000:3000 -e L2H_LDAP_URL="ldap://<url>" \
 	-e L2H_BASE_DN="dc=example,dc=org" \
 	-e L2H_ADMIN_DN="cn=admin,dc=example,dc=org" \
 	-e L2H_ADMIN_PW="password" \
-	xenoscopesc/ldap2rest:v0.3
+	xenoscopesc/ldap2rest:v0.5
 ```
 
 # Configs

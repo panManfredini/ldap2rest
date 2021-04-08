@@ -8,6 +8,7 @@ var _groups_scope = process.env.L2H_GROUP_SCOPE || "";
 var _group_name_attr = process.env.L2H_GROUP_NAME_ATTR || "cn";
 var _port = parseInt(process.env.L2H_PORT || "3000",10);
 var _users_scope  = process.env.L2H_USER_SCOPE || "";
+var _generate_pw  = process.env.L2H_GENERATE_PW || "true";
 
 
 export const config =
@@ -21,5 +22,6 @@ export const config =
     users_scope : _users_scope,
     cors: (_cors.toLowerCase() === "true"),
     groups_scope : _groups_scope,
-    group_name_attr: _group_name_attr
+    group_name_attr: _group_name_attr,
+    generate_pw : ( _generate_pw.toLowerCase() === "true" )
 }

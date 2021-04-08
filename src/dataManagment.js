@@ -1,5 +1,14 @@
+import {config} from "./config"
+
 export function createUser(data) {
     if (!validateDataUserCreate(data)) return null;
+    
+    var password = " ";
+    
+    if(config.generate_pw) password =  generateRandomPassword();
+    else if(!isEmptyString(data.password)) password = data.password;
+    else return null;
+
     return {
         uid: data.uid,
         objectclass: "inetOrgPerson",
@@ -8,7 +17,7 @@ export function createUser(data) {
         mail: data.mail,
         mobile: data.mobile,
         displayname: data.displayName,
-        userPassword: "test"
+        userPassword: password
     }
 }
 
@@ -19,6 +28,17 @@ function validateDataUserCreate(data) {
     if (isEmptyString(data.mail)) return false;
     if (isEmptyString(data.displayName)) return false;
     return true;
+}
+
+function generateRandomPassword()
+{
+    var length = 12,
+    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    retVal = "";
+    for (var i = 0, n = charset.length; i < length; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return retVal;
 }
 
 function isEmptyString(str) {

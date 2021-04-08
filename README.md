@@ -25,6 +25,7 @@ docker run --rm -it -p 3000:3000 -e L2H_LDAP_URL="ldap://<url>" \
 |L2H_USER_SCOPE      | empty | additional organization unit for users, for example "ou=Persons"|
 |L2H_GROUP_ADDINTIONAL_DN| "" | additional dn to add to group, example "ou=groups"|
 |L2H_GROUP_NAME_ATTR| "cn" | attribute that holds the name of the group|
+|L2H_GENERATE_PW| "true" | defines if to generate a random password when creating user.|
 
 ### Notes
 
